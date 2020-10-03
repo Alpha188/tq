@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Login Page</title>
+    <head th:insert="import::res"></head>
+    <style type="text/css">
+        .layui-table-view {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<!-- 代 码 结 构 -->
+<body class="pear-container">
+<div class="layui-row layui-col-space10">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            <!--步骤1 录入时间-->
+                            <div>
+                                <form class="layui-form" action="javascript:void(0);"
+                                      style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">时间关键字</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="keyword" name="uuyfe" required lay-verify="required"
+                                                   placeholder="请输入时间关键字"
+                                                   autocomplete="off" class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">替换为</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="date" name="3jr6l" required lay-verify="required"
+                                                   placeholder="请输入日期"
+                                                   autocomplete="off" class="layui-input" failure>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item layui-form-text">
+                                        <label class="layui-form-label">时间</label>
+                                        <div class="layui-input-block">
+                                            <textarea id="times" placeholder="请输入内容" class="layui-textarea"
+                                                      style="height: 200px"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="pear-btn pear-btn-success next">
+                                                下一步
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!--步骤2 填写经文-->
+                            <div>
+                                <form class="layui-form" action="javascript:void(0);"
+                                      style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item layui-form-text">
+                                        <label class="layui-form-label">读经内容</label>
+                                        <div class="layui-input-block">
+                                         <textarea id="jingwen" name="record" placeholder="请输入内容" class="layui-textarea"
+                                                   style="height: 200px"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="pear-btn pear-btn-success pre">上一步</button>
+                                            <button class="pear-btn pear-btn-success next">下一步</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!--步骤3 录入数据-->
+                            <div class="layui-row layui-col-space10">
+                                <div class="layui-col-md6">
+                                    <div class="layui-card">
+                                        <div class="layui-card-header">时间</div>
+                                        <div class="layui-card-body">
+                                            <textarea id="timesReal" placeholder="请输入内容" class="layui-textarea"
+                                                      style="height: 300px;text-align: right"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-md6">
+                                    <div class="layui-card">
+                                        <div class="layui-card-header">经文</div>
+                                        <div class="layui-card-body">
+                                            <form class="layui-form" action="" onsubmit="return false">
+                                                <div class="layui-form-item">
+                                                    <label class="layui-form-label">复选框</label>
+                                                    <div class="layui-input-block" id="jingwenDiv">
+                                                        <script type="text/html" id="jingwenTpl">
+                                                            {{#  layui.each(d.data, function(index, item){ }}
+                                                            <select name="rz83j" lay-verify="required" lay-search>
+                                                                {{#  layui.each(d.data, function(index, item){ }}
+                                                                <option value={{ item.name }}>{{ item.name }}</option>
+                                                                {{# }); }}
+                                                            </select>
+                                                            {{# }); }}
+                                                        </script>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="text-align: center">
+                                    <button class="pear-btn pear-btn-success pre">上一步</button>
+                                    <button class="pear-btn pear-btn-success" lay-submit lay-filter="babel-sort">排序
+                                    </button>
+                                    <button class="pear-btn pear-btn-success" lay-submit lay-filter="babel-save">录入
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<script type="text/html" id="babel-bar">
+    <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>
+    </button>
+    <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>
+    </button>
+</script>
+
+
+<script>
+    layui.use(['form', 'step', 'notice', 'laytpl', 'jquery'], function () {
+        let $ = layui.jquery,
+            form = layui.form,
+            step = layui.step,
+            notice = layui.notice,
+        laytpl = layui.laytpl;
+        //init-----------------------------
+        $("#keyword").val("昨天");
+        $("#date").val(getYesterdayDate());
+        let tpl = jingwenTpl.innerHTML;
+
+        //渲染步骤图
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%',
+            stepWidth: '600px',
+            height: '500px',
+            stepItems: [{
+                title: '填写时间'
+            }, {
+                title: '填写经文'
+            }, {
+                title: '录入数据'
+            }]
+        });
+
+        //事件---------------------------
+        //录入
+        form.on('submit(babel-save)', function (data) {
+            $.ajax({
+                url: "/babel/save",
+                type: 'post',
+                dateType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "dates": $("#timesReal").val().split("\n\n"),
+                    "infos": $("#jingwenReal").val().split("\n\n")
+                }),
+                success: function (result) {
+                    if (result.code === 0) {
+                        notice.success(result.msg)
+                    } else {
+                        notice.error(result.msg)
+                    }
+                }
+            })
+            return false;
+        });
+
+        //排序
+        form.on('submit(babel-sort)', function (data) {
+            let jingwenArr = $("#jingwenReal").val().split("\n\n");
+            jingwenArr = jingwenArr.sort().map(e => {
+                if (/\d/.test(e[0])) {
+                    return e.replace(/^\d+/, "")
+                }
+                return e;
+            });
+            $("#jingwenReal").val(jingwenArr.join("\n\n"));
+            return false;
+        });
+
+        //上一步
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+            return false;
+        });
+
+        //下一步
+        $('.next').click(function () {
+            step.next('#stepForm');
+            formatTime()
+            formatJingwen()
+            return false;
+        });
+
+
+        //-------------函数--------------
+        //格式化经文
+        function formatJingwen() {
+            $.ajax({
+                url: "/babel/parser",
+                type: 'post',
+                contentType: 'application/json',
+                dateType: "json",
+                data: JSON.stringify({"record": $("#jingwen").val()}),
+                success: (res) => {
+                    if (res.code === 0) {
+                        textArr = [];
+                        res.data.forEach(e => {
+                            textArr.push(e.name + " " + e.jingwen + " " + e.chapterCount)
+                        });
+                        //渲染模版
+                        let view = document.getElementById('jingwenDiv');
+                        laytpl(tpl).render(res, function (html) {
+                            view.innerHTML = html;
+                            form.render('select'); //刷新select选择框渲染
+                        });
+                        // $("#jingwenReal").val(textArr.join("\n\n"));
+                    }
+                },
+                error: err => console.log(err)
+            });
+        }
+
+        //格式化读经时间
+        function formatTime() {
+            var times = $("#times").val();
+            times = times.replace(/'/g, "");
+            times = times.replace(/,/g, "\n");
+            timeArr = times.split("\n");
+            //替换关键字为日期
+            timeArr = timeArr.map(e => {
+                return e.replace($("#keyword").val(), $("#date").val());
+                // return getYesterdayDate() + e
+            });
+            //去除空格
+            timeArr = timeArr.map(e => {
+                return e.replace(/\s/g, "")
+            });
+            //替换晚上/上午
+            timeArr = timeArr.map(e => {
+                if (e.search(/晚上|下午/) !== -1) {
+                    e = e.replace(/晚上|下午/, " ")
+                    return getTime(e, 12);
+                } else if (e.search("凌晨12") !== -1) {
+                    return e.replace("凌晨12", " 00")
+                } else if (e.search(/上午|中午|凌晨/) !== -1) {
+                    return e.replace(/上午|中午|凌晨/, " ")
+                }
+                return e;
+            });
+            $("#timesReal").val(timeArr.reverse().join("\n\n"))
+        }
+
+        function getYesterdayDate() {
+            var day1 = new Date();
+            day1.setTime(day1.getTime() - 24 * 60 * 60 * 1000);
+            return day1.getFullYear() + "-" + (day1.getMonth() + 1) + "-" + day1.getDate();
+        }
+
+        function dateFormat(fmt, date) {
+            let ret;
+            const opt = {
+                "Y+": date.getFullYear().toString(),        // 年
+                "m+": (date.getMonth() + 1).toString(),     // 月
+                "d+": date.getDate().toString(),            // 日
+                "H+": date.getHours().toString(),           // 时
+                "M+": date.getMinutes().toString(),         // 分
+                "S+": date.getSeconds().toString()          // 秒
+                // 有其他格式化字符需求可以继续添加，必须转化成字符串
+            };
+            for (let k in opt) {
+                ret = new RegExp("(" + k + ")").exec(fmt);
+                if (ret) {
+                    fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+                }
+            }
+            ;
+            return fmt;
+        }
+
+        function getTime(dateStr, hours) {
+            let date = new Date(dateStr);
+            date.setHours(date.getHours() + hours);
+            return dateFormat("YYYY-mm-dd HH:MM", date);
+        }
+    })
+
+
+</script>
+
+</body>
+</html>

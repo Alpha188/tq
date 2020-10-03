@@ -1,0 +1,17 @@
+F:\code\tq\src\main\java\com\alpha\CommunityApplication.java
+F:\code\tq\src\main\java\com\alpha\controller\IndexController.java
+F:\code\tq\src\main\java\com\alpha\dto\jingwenDTO.java
+F:\code\tq\src\main\java\com\alpha\common\IResultCode.java
+F:\code\tq\src\main\java\com\alpha\mapper\NameMapper.java
+F:\code\tq\src\main\java\com\alpha\entity\NameExample.java
+F:\code\tq\src\main\java\com\alpha\mapper\BabelMapper.java
+F:\code\tq\src\main\java\com\alpha\common\DefaultBindingResultAdvice.java
+F:\code\tq\src\main\java\com\alpha\controller\NameController.java
+F:\code\tq\src\main\java\com\alpha\advice\BindingResultAdvice.java
+F:\code\tq\src\main\java\com\alpha\common\ResultCode.java
+F:\code\tq\src\main\java\com\alpha\dto\InfoSaveDTO.java
+F:\code\tq\src\main\java\com\alpha\entity\Name.java
+F:\code\tq\src\main\java\com\alpha\entity\BabelExample.java
+F:\code\tq\src\main\java\com\alpha\entity\Babel.java
+F:\code\tq\src\main\java\com\alpha\common\ResultDTO.java
+F:\code\tq\src\main\java\com\alpha\controller\BabelController.java

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <head th:insert="import::res"></head>
+</head>
+<body class="pear-container">
+<div class="layui-card">
+    <div class="layui-card-body">
+        <ul class="layui-timeline" id="timeline">
+            <!--模板-->
+            <script id="timelineTpl" type="text/html">
+                {{#  layui.each(d.data, function(index, item){ }}
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <h3 class="layui-timeline-title">{{ item.date }}</h3>
+                        <div class="layui-btn-container tag" lay-filter="test" lay-newtags="true">
+                            <blockquote class="layui-elem-quote">
+                                {{# layui.each(item.readNames, function(index, readName){ }}
+                                <button class="pear-btn pear-btn-success" round="" plain="" style="margin-left: 5px">{{
+                                    readName }}
+                                </button>
+                                {{# }); }}
+
+                                {{# layui.each(item.unreadNames, function(index, unreadName){ }}
+                                <button class="pear-btn pear-btn-danger" round="" plain="" style="margin-left: 5px">{{
+                                    unreadName }}
+                                </button>
+                                {{# }); }}
+                                <span>读经了</span>
+                            </blockquote>
+                        </div>
+                        <div>
+                <li>
+                    {{# }); }}
+                <li class="layui-timeline-item">
+                    <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                    <div class="layui-timeline-content layui-text">
+                        <div class="layui-timeline-title">过去</div>
+                    </div>
+                </li>
+            </script>
+
+        </ul>
+        <div id="page"></div>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    layui.use(['table', 'jquery', 'form', 'laypage', 'laytpl'], function () {
+        let table = layui.table;
+        let form = layui.form;
+        let $ = layui.jquery;
+        let laypage = layui.laypage;
+        let laytpl = layui.laytpl;
+        //init------------------------
+        let tpl = timelineTpl.innerHTML;
+        laypage.render({
+            elem: 'page' //注意，这里的 test1 是 ID，不用加 # 号
+            , count: [[${pageTotal}]] //数据总数，从服务端得到
+            , limit: 8
+            , jump: function (obj, first) {
+                //obj包含了当前分页的所有参数，比如：
+                renderTimeline(obj.curr, obj.limit);
+            }
+        });
+
+
+        function renderTimeline(page, limit) {
+            $.ajax({
+                url: "/timeline/list",
+                type: 'get',
+                contentType: 'application/json',
+                data: {"page": page, "limit": limit},
+                success: (result) => {
+                    if (result.code === 0) {
+                        //渲染模版
+                        let view = document.getElementById('timeline');
+                        laytpl(tpl).render(result, function (html) {
+                            view.innerHTML = html;
+                        });
+
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            });
+        }
+    })
+</script>
+</html>

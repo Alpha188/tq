@@ -1,0 +1,59 @@
+[
+  {
+    "id": "index",
+    "title": "首页",
+    "icon": "layui-icon layui-icon-home",
+    "type": 1,
+    "href": "/timeline"
+  },
+  {
+    "id": "system",
+    "title": "系统管理",
+    "icon": "layui-icon layui-icon-set-fill",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 1,
+        "title": "打卡解析",
+        "icon": "layui-icon layui-icon-face-smile",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/babel/parser"
+      },
+      {
+        "id": 2,
+        "title": "打卡管理",
+        "icon": "layui-icon layui-icon-face-cry",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/babel/main"
+      }
+    ]
+  },
+  {
+    "id": "analyse",
+    "title": "数据分析",
+    "icon": "layui-icon layui-icon-console",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 4,
+        "title": "数据分析",
+        "icon": "layui-icon layui-icon-face-cry",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/analyse/data"
+      },
+      {
+        "id": 5,
+        "title": "行为分析",
+        "icon": "layui-icon layui-icon-face-cry",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/analyse/behaviour"
+      }
+    ]
+  }
+]

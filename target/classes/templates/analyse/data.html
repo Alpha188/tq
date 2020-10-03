@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <head th:insert="import::res"></head>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js"></script>
+</head>
+<body class="pear-container">
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" onsubmit="return false">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">选择日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="readTimeRange" name="readTimeRange" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="test">获取</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            <hr class="layui-bg-green">
+            <div class="layui-form-item">
+                <div id="chapterCountChart" style="width: auto;height:400px;"></div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body">
+        <div id="test1" style="width: auto;height:400px;"></div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    layui.use(['form', 'jquery', 'layer', 'laydate'], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.jquery;
+        let laydate = layui.laydate;
+        //init=======================================
+        //日期范围选择器
+        laydate.render({
+            elem: '#readTimeRange'
+            , range: '~'
+            , type: 'date'
+            , max: 0 //7天后
+        });
+        //绘制近7天的章节数图表
+        $.ajax({
+            url: "/analyse/chapter",
+            contentType: 'application/json',
+            data: {},
+            type: 'get',
+            success: function (result) {
+                if (result.code === 0) {
+                    drawChapter("章节数统计数", result.data.legend, result.data.xaxis, result.data.series)
+                } else {
+                    layer.msg(result.msg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            }
+        });
+        //绘制统计图表
+        $.ajax({
+            url: "/analyse/count",
+            contentType: 'application/json',
+            data: {},
+            type: 'get',
+            success: function (result) {
+                if (result.code === 0) {
+                    drawCount("打卡统计", result.data.legend, result.data.xaxis, result.data.series)
+                } else {
+                    layer.msg(result.msg, {
+                        icon: 2,
+                        time: 1000
+                    });
+                }
+            }
+        });
+
+        //事件=======================================
+        form.on('submit(test)', function (data) {
+            layer.msg(JSON.stringify(data.field));
+            let readTimeArr = data.field.readTimeRange.split("~");
+            readTimeArr = readTimeArr.map(e => {
+                return e.replaceAll(" ", "")
+            });
+            $.ajax({
+                url: "/analyse/chapter",
+                contentType: 'application/json',
+                data: {"startDate": readTimeArr[0], "endDate": readTimeArr[1]},
+                type: 'get',
+                success: function (result) {
+                    if (result.code === 0) {
+                        drawChapter("章节数统计数", result.data.legend, result.data.xaxis, result.data.series)
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 2,
+                            time: 1000
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+        //绘制
+
+    })
+</script>
+
+<script>
+    function drawChapter(title, legend, xAxis, series) {
+        //处理series
+        let seriesReal = series.map(e => {
+            let json = {};
+            json['name'] = e.name;
+            json['data'] = e.data;
+            json['type'] = "line";
+            // json['stack'] = "总量";
+            json['areaStyle'] = {};
+            return json;
+        });
+        // 基于准备好的dom，初始化echarts实例
+        let myChart = echarts.init(document.getElementById('chapterCountChart'));
+
+        // 指定图表的配置项和数据
+        let option = {
+            title: {
+                text: title
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                }
+            },
+            legend: {
+                data: legend
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xAxis
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: seriesReal
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+    function drawCount(title, legend, xAxis, series) {
+        // 基于准备好的dom，初始化echarts实例
+        let myChart = echarts.init(document.getElementById('test1'));
+        //处理series
+        let seriesReal = series.map(e => {
+            let json = {};
+            json['name'] = e.name;
+            json['data'] = e.data;
+            json['type'] = "bar";
+            json['label'] = {
+                show: true,
+                position: 'inside'
+            };
+            return json;
+        });
+        let option = {
+            title: {
+                text: title
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                data: legend
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            yAxis: {
+                type: 'value'
+            },
+            xAxis: {
+                type: 'category',
+                data: xAxis
+            },
+            series: seriesReal
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+</script>
+</html>

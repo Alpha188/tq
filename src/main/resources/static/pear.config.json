@@ -1,0 +1,59 @@
+{
+  "logo": {
+    "title": "团契读经系统",
+    "image": "admin/images/logo.png"
+  },
+  "menu": {
+    "data": "admin/data/menu.json",
+    "accordion": true,
+    "control": false,
+    "select": "index"
+  },
+  "tab": {
+    "muiltTab": true,
+    "keepState": true,
+    "tabMax": 30,
+    "index": {
+      "id": "index",
+      "href": "/timeline",
+      "title": "首页"
+    }
+  },
+  "theme": {
+    "defaultColor": "3",
+    "defaultMenu": "dark-theme",
+    "allowCustom": true
+  },
+  "colors": [
+    {
+      "id": "1",
+      "color": "#FF5722"
+    },
+    {
+      "id": "2",
+      "color": "#5FB878"
+    },
+    {
+      "id": "3",
+      "color": "#1E9FFF"
+    },
+    {
+      "id": "4",
+      "color": "#FFB800"
+    },
+    {
+      "id": "5",
+      "color": "darkgray"
+    }
+  ],
+  "links": [
+    {
+      "icon": "layui-icon layui-icon-website",
+      "title": "首页",
+      "href": "/timeline"
+    }
+  ],
+  "other": {
+    "keepLoad": 100
+  }
+}

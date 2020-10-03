@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <head th:insert="import::res"></head>
+
+</head>
+<body class="pear-container">
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" action="" onsubmit="return false">
+            <div class="layui-form-item">
+                <label class="layui-form-label">时间关键字</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="keyword" name="uuyfe" required lay-verify="required" placeholder="请输入时间关键字"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">替换为</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="date" name="3jr6l" required lay-verify="required" placeholder="请输入日期"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form" onsubmit="return false;">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">时间</label>
+                <div class="layui-input-block">
+                    <textarea id="times" placeholder="请输入内容" class="layui-textarea" style="height: 200px"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="form1">格式化</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">读经内容</label>
+                <div class="layui-input-block">
+                    <textarea id="jingwen" name="record" placeholder="请输入内容" class="layui-textarea"
+                              style="height: 200px"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="form2">解析</button>
+                    <button class="layui-btn" lay-submit lay-filter="form3">排序</button>
+                    <button class="layui-btn" lay-submit lay-filter="form4">录入</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- 你的HTML代码 -->
+<script>
+
+    //一般直接写在一个js文件中
+    layui.use(['form', 'jquery', 'laydate', 'layer'], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.jquery;
+        let laydate = layui.laydate;
+        //init---------------------------------
+        $("#keyword").val("昨天");
+        $("#date").val(getYesterdayDate());
+        //日期范围选择器
+        laydate.render({
+            elem: '#date'
+            , type: 'date'
+        });
+
+        //layui渲染------------------------------
+        //时间表单  格式化时间
+        form.on('submit(form1)', function (data) {
+            var times = $("#times").val();
+            times = times.replace(/'/g, "");
+            times = times.replace(/,/g, "\n");
+            timeArr = times.split("\n");
+            //替换关键字为日期
+            timeArr = timeArr.map(e => {
+                return e.replace($("#keyword").val(), $("#date").val());
+                // return getYesterdayDate() + e
+            });
+            //去除空格
+            timeArr = timeArr.map(e => {
+                return e.replace(/\s/g, "")
+            });
+            //替换晚上/上午
+            timeArr = timeArr.map(e => {
+                if (e.search(/晚上|下午/) !== -1) {
+                    e = e.replace(/晚上|下午/, " ")
+                    return getTime(e, 12);
+                } else if (e.search("凌晨12") !== -1) {
+                    return e.replace("凌晨12", " 00")
+                } else if (e.search(/上午|中午|凌晨/) !== -1) {
+                    return e.replace(/上午|中午|凌晨/, " ")
+                }
+
+                return e;
+            });
+            $("#times").val(timeArr.reverse().join("\n"));
+
+            return false;
+        });
+
+        //layui事件------------------------------
+        //解析读经内容
+        form.on('submit(form2)', function (data) {
+            $.ajax({
+                url: "/babel/parser",
+                type: 'post',
+                contentType: 'application/json',
+                dateType: "json",
+                data: JSON.stringify(data.field),
+                success: (res) => {
+                    if (res.code === 0) {
+                        textArr = [];
+                        console.log(res.data)
+                        res.data.forEach(e => {
+                            textArr.push(e.name + " " + e.jingwen + " " + e.chapterCount)
+                        });
+                        $("#jingwen").val(textArr.join("\n"));
+                    }
+                },
+                error: err => console.log(err)
+            });
+            return false;
+        });
+
+        //排序读经内容
+        form.on('submit(form3)', function (data) {
+            let jingwenArr = $("#jingwen").val().split("\n");
+            jingwenArr = jingwenArr.sort().map(e => {
+                if (/\d/.test(e[0])) {
+                    return e.replace(/^\d/, "")
+                }
+                return e;
+            });
+            $("#jingwen").val(jingwenArr.join("\n"));
+
+            return false;
+        });
+
+        //录入
+        form.on('submit(form4)', function (data) {
+            $.ajax({
+                url: "/babel/save",
+                type: 'post',
+                dateType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "dates": $("#times").val().split("\n"),
+                    "infos": $("#jingwen").val().split("\n")
+                }),
+                success: function (result) {
+                    if (result.code === 0) {
+                        layer.msg(result.msg, {icon: 1, time: 1000}, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));//关闭当前页
+                            parent.layui.table.reload("babel-table");
+                        });
+                    } else {
+                        layer.msg(result.msg, {icon: 2, time: 1000});
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+<script>
+    function getYesterdayDate() {
+        var day1 = new Date();
+        day1.setTime(day1.getTime() - 24 * 60 * 60 * 1000);
+        return day1.getFullYear() + "-" + (day1.getMonth() + 1) + "-" + day1.getDate();
+    }
+
+    function dateFormat(fmt, date) {
+        let ret;
+        const opt = {
+            "Y+": date.getFullYear().toString(),        // 年
+            "m+": (date.getMonth() + 1).toString(),     // 月
+            "d+": date.getDate().toString(),            // 日
+            "H+": date.getHours().toString(),           // 时
+            "M+": date.getMinutes().toString(),         // 分
+            "S+": date.getSeconds().toString()          // 秒
+            // 有其他格式化字符需求可以继续添加，必须转化成字符串
+        };
+        for (let k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            }
+        }
+        ;
+        return fmt;
+    }
+
+    function getTime(dateStr, hours) {
+        let date = new Date(dateStr);
+        date.setHours(date.getHours() + hours);
+        return dateFormat("YYYY-mm-dd HH:MM", date);
+    }
+
+</script>
+</body>
+</html>
